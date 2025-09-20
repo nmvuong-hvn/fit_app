@@ -2,6 +2,7 @@ package com.marusys.fitnessapp.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,23 +19,32 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.marusys.fitnessapp.R
 import com.marusys.fitnessapp.model.Category
+import com.marusys.fitnessapp.ui.theme.LocalMyTypography
 
 @Composable
 fun ItemCategory(modifier: Modifier = Modifier, data : Category, onClick : (Category) -> Unit){
-    Box(modifier = modifier
+    val onEventModifier = remember {
+        modifier.clickable {
+            onClick(data)
+        }
+    }
+    Box(modifier = onEventModifier
         .height(81.dp)
         .fillMaxWidth()
         .background(colorResource(R.color.bg_item_category), RoundedCornerShape(12.dp)),
@@ -46,17 +56,19 @@ fun ItemCategory(modifier: Modifier = Modifier, data : Category, onClick : (Cate
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Image(painter = painterResource(R.drawable.ic_launcher_background), "",
+            Image(painter = painterResource(data.thumbnail), "",
                 modifier = Modifier.size(64.dp, 32.dp)
-                )
-            Column(modifier = Modifier.wrapContentSize(),
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.fillMaxWidth(0.9f),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start
                 ) {
-                Text("Full Body Warm Up")
+                Text(data.name, style = LocalMyTypography.current.bodySemi)
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("20 Exercises")
+                Text("${data.idsList.split(",").size}", style = LocalMyTypography.current.body2Regular, color = colorResource(R.color.gray_2))
             }
+            Image(imageVector = ImageVector.vectorResource(R.drawable.chevron_right), "")
         }
     }
 }
@@ -110,10 +122,8 @@ fun WorkoutItem(
                 )
                 Text(
                     text = "$current/$total",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF8A4FFF)
-                    )
+                    style = LocalMyTypography.current.body2Semi,
+                    color = colorResource(R.color.primary)
                 )
             }
 
@@ -122,11 +132,8 @@ fun WorkoutItem(
             // Tên bài tập
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = Color.Black
-                )
+                style = LocalMyTypography.current.body2Bold,
+                color = colorResource(R.color.black)
             )
 
             // Thời gian còn lại
