@@ -8,4 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="bg_item_category">#F3F6FB</color>
+    <color name="begin_color_gradient">#9747FF</color>
+    <color name="primary">#7C4DFF</color>
+    <color name="gray_3">#CFCFE2</color>
+    <color name="gray_2">#9C9BC2</color>
 </resources>
