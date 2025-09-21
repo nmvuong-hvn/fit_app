@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "745671664668",
+    "project_id": "plated-mechanic-459212-i8",
+    "storage_bucket": "plated-mechanic-459212-i8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745671664668:android:14a543f274679f0a1cebd9",
+        "android_client_info": {
+          "package_name": "com.marusys.fitnessapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjIgsV7wQFgWoVgl8weU7V5EVekuIp1AI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
