@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -157,7 +158,7 @@ fun HomeScreen(modifier: Modifier = Modifier, paddingValues: PaddingValues) {
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
-            FitnessBanner(title = stringResource(R.string.content_banner), "") { }
+            FitnessBanner(title =  stringResource(R.string.content_banner), "") { }
             Spacer(modifier = Modifier.height(40.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -34,13 +34,6 @@ fun SettingLanguageScreen(
 ) {
     var selectedLanguage by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
-    LaunchedEffect(selectedLanguage) {
-        if (selectedLanguage.isNotEmpty()) {
-            changeLocales(context, selectedLanguage)
-            onBackClick()
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +41,7 @@ fun SettingLanguageScreen(
             .padding(16.dp)
     ) {
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(70.dp))
         Card(
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier.fillMaxWidth()
@@ -75,7 +68,8 @@ fun SettingLanguageScreen(
         // Nút lưu
         Button(
             onClick = {
-
+                changeLocales(context, selectedLanguage)
+                onBackClick()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -83,7 +77,7 @@ fun SettingLanguageScreen(
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9B51E0))
         ) {
-            Text("Save", color = Color.White, fontSize = 16.sp)
+            Text(stringResource(R.string.save), color = Color.White, fontSize = 16.sp)
         }
     }
 }

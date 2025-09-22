@@ -1,16 +1,12 @@
 package com.marusys.fitnessapp.navigation
 
-import android.app.ActionBar
-import android.app.Activity
-import android.provider.ContactsContract
 import android.util.Log
-import android.view.View
-import android.view.WindowManager
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -18,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -26,29 +21,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import androidx.compose.ui.window.DialogWindowProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -65,12 +54,11 @@ import com.marusys.fitnessapp.feature.profile.ProfileEvent
 import com.marusys.fitnessapp.feature.profile.ProfileScreen
 import com.marusys.fitnessapp.feature.profile.ProfileViewModel
 import com.marusys.fitnessapp.feature.profile.SettingLanguageScreen
-import com.marusys.fitnessapp.ui.theme.FitnessAppTheme
 import com.marusys.fitnessapp.ui.theme.LocalMyTypography
-import com.marusys.fitnessapp.ui.theme.MyTypograph
 import org.koin.androidx.compose.koinViewModel
-import java.util.Locale
-import androidx.compose.ui.platform.LocalResources
+import com.marusys.fitnessapp.feature.account.AccountIntent
+import com.marusys.fitnessapp.feature.account.SignInEmailScreen
+import com.marusys.fitnessapp.feature.account.SignUpAccountScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +66,7 @@ import androidx.compose.ui.platform.LocalResources
 fun HostRoute(modifier: Modifier = Modifier){
     val TAG = "HostRoute"
     val hostController = rememberNavController()
-    var routePath by remember { mutableStateOf(HomeRoute) }
+    var routePath by remember { mutableStateOf(LoginRoute) }
     val selectedIndex by remember {
         derivedStateOf {
             mainRouteList.indexOfFirst { it.route == routePath }
@@ -87,7 +75,15 @@ fun HostRoute(modifier: Modifier = Modifier){
     val isShownTopBar by remember {
         derivedStateOf {
             Log.d(TAG, "HostRoute: ===> selectedIndex = $selectedIndex ")
-            selectedIndex == 0
+            selectedIndex in (1 .. 2)
+        }
+    }
+
+    val isShownBottomNavigation by remember {
+        derivedStateOf {
+            val index =  mainRouteList.indexOfFirst { it.route == routePath }
+            Log.d(TAG, "HostRoute: => index = $index - routePath = $routePath")
+            index >= 3
         }
     }
 
@@ -95,7 +91,7 @@ fun HostRoute(modifier: Modifier = Modifier){
         derivedStateOf {
             val index =  mainRouteList.indexOfFirst { it.route == routePath }
             Log.d(TAG, "HostRoute: => index = $index - routePath = $routePath")
-            index >= 3
+            index in (1 .. 2)
         }
     }
 
@@ -109,15 +105,19 @@ fun HostRoute(modifier: Modifier = Modifier){
 
     Scaffold(
         topBar = {
-            if (!isShownTopBar) {
+            if (isShownTopBar) {
                 TopAppBar(
+
                     title = {
-                         mainRouteList[selectedIndex].content()
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            mainRouteList[selectedIndex].content()
+                        }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.White
                     ),
                     navigationIcon = {
+                        Log.d(TAG, "HostRoute: ===> isShownBackTopBar = $isShownBottomNavigation ")
                         if (isShownBackTopBar){
                             Row (modifier = Modifier.wrapContentWidth()){
                                 Icon(
@@ -134,19 +134,17 @@ fun HostRoute(modifier: Modifier = Modifier){
                                             hostController.popBackStack()
                                         }
                                 )
-                                Spacer(modifier = Modifier.width(16.dp))
                             }
-
                         }
                     }
                 )
             }
         },
         bottomBar = {
-            if (!isShownBackTopBar) {
+            if (isShownBottomNavigation) {
                 NavigationBar{
                     mainRouteList.fastForEachIndexed { index , value ->
-                        if (index < 3) {
+                        if (index in (3 .. 5)) {
                             key(value.route) {
                                 NavigationBarItem(
                                     selected = selectedIndex == index,
@@ -177,21 +175,51 @@ fun HostRoute(modifier: Modifier = Modifier){
             }
         }
     ) { padding ->
-        NavHost(navController = hostController, startDestination = "home_graph",) {
+        NavHost(navController = hostController, startDestination = "auth_graph") {
+            auth(hostController){
+                routePath = it
+            }
             mainUi(padding, navController = hostController){
                 routePath = it
             }
         }
     }
-
 }
 
 @Preview
 @Composable
 fun PreviewHostRoute(){
-    FitnessAppTheme {
-        CompositionLocalProvider(LocalMyTypography provides MyTypograph()) {
-            HostRoute()
+
+}
+
+fun NavGraphBuilder.onBoarding(navController: NavController){
+    navigation("login", route = "auth_graph"){
+
+    }
+}
+
+fun NavGraphBuilder.auth(navController: NavController, onNavigate: (String) -> Unit){
+    navigation(LoginRoute, route = "auth_graph"){
+        composable(LoginRoute){
+            val viewModel = koinViewModel<AccountViewModel>()
+            val onIntent : (AccountIntent) -> Unit = remember {
+                viewModel::processIntent
+            }
+            SignInEmailScreen(onContinue = { email, pass ->
+                onIntent(AccountIntent.SignIn(email, pass))
+            }, onCreateAccount = {
+                onNavigate(RegisterRoute)
+                navController.navigate(RegisterRoute)
+            })
+        }
+        composable(RegisterRoute){
+            val viewModel = koinViewModel<AccountViewModel>()
+            SignUpAccountScreen(viewModel = viewModel) {
+                navController.popBackStack()
+            }
+        }
+        composable(ForgotPassRoute){
+
         }
     }
 }
@@ -261,30 +289,50 @@ data class Route (val route : String, val content: @Composable () -> Unit, val i
 
 }
 val mainRouteList = listOf(
+    Route(LoginRoute, content = {
+        Text(text = stringResource(R.string.sign_in),
+            color = Color.Black,
+            style = LocalMyTypography.current.h2BoldStyle)
+    }, R.drawable.home_no_select, R.drawable.home_select),
+    Route(RegisterRoute, content = {
+        Text(text = stringResource(R.string.sign_up),
+            color = Color.Black,
+            style = LocalMyTypography.current.h2BoldStyle)
+    }, R.drawable.home_no_select, R.drawable.home_select),
+
+    Route(ForgotPassRoute, content = {
+        Text(text = stringResource(R.string.sign_up),
+            color = Color.Black,
+            style = LocalMyTypography.current.h2BoldStyle)
+    }, R.drawable.home_no_select, R.drawable.home_select),
     Route(HomeRoute,content = {
         Text(text = stringResource(R.string.home),
             color = Color.Black,
-            style = LocalMyTypography.current.bodyBold)
+            style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.home_no_select, R.drawable.home_select),
     Route(ActivityRoute,  content = {
-        Text(text = stringResource(R.string.activity),color = Color.Black, style = LocalMyTypography.current.bodyBold)
+        Text(text = stringResource(R.string.activity),color = Color.Black, style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.activity, R.drawable.activity_select),
     Route(ProfileRoute,content = {
-        Text(text = stringResource(R.string.my_profile),color = Color.Black, style = LocalMyTypography.current.bodyBold)
+        Text(text = stringResource(R.string.my_profile),color = Color.Black, style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.profile_no_select, R.drawable.profile_select),
     Route(EditRoute,content = {
-        Text(text = stringResource(R.string.edit_profile),color = Color.Black, style = LocalMyTypography.current.bodyBold)
+        Text(text = stringResource(R.string.edit_profile),color = Color.Black, style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.profile_no_select, R.drawable.profile_select),
     Route(LanguageRoute,content = {
-        Text(text = stringResource(R.string.language),color = Color.Black, style = LocalMyTypography.current.bodyBold)
+        Text(text = stringResource(R.string.language),color = Color.Black, style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.profile_no_select, R.drawable.profile_select),
     Route(ChangePassRoute,content = {
-        Text(text = stringResource(R.string.change_password),color = Color.Black, style = LocalMyTypography.current.bodyBold)
+        Text(text = stringResource(R.string.change_password),color = Color.Black, style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.profile_no_select, R.drawable.profile_select),
     Route(HelpRoute,content = {
-        Text(text = stringResource(R.string.help), color = Color.Black,style = LocalMyTypography.current.bodyBold)
+        Text(text = stringResource(R.string.help), color = Color.Black,style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.profile_no_select, R.drawable.profile_select),
 )
+
+private const val LoginRoute = "login"
+private const val RegisterRoute = "register"
+private const val ForgotPassRoute = "forgot_password"
 private const val HomeRoute = "home"
 private const val ActivityRoute = "activity"
 private const val ProfileRoute = "profile"

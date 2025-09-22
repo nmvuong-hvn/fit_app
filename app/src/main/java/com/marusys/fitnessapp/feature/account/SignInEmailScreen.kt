@@ -4,10 +4,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -29,60 +33,69 @@ import com.marusys.fitnessapp.ui.theme.LocalMyTypography
 
 @Composable
 fun SignInEmailScreen(
-    onContinue: (String) -> Unit,
+    onContinue: (String , String) -> Unit,
     onCreateAccount: () -> Unit,
-    onBack: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-
+    var email by rememberSaveable { mutableStateOf("") }
+    var pass by rememberSaveable { mutableStateOf("") }
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .background(color = Color.White)
+            .padding(24.dp).verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "Sign In", style = LocalMyTypography.current.h2BoldStyle)
+        Text(text = stringResource(R.string.sign_in), style = LocalMyTypography.current.h2BoldStyle)
         Spacer(modifier = Modifier.height(80.dp))
         Box (modifier = Modifier.fillMaxWidth()) {
-            Text("Email Address", style = LocalMyTypography.current.bodyMedium)
+            Text( text = stringResource(R.string.email_address), style = LocalMyTypography.current.bodyMedium)
         }
         Spacer(Modifier.height(12.dp))
         // Email TextField
-        BuildUiInputText()
+        BuildUiInputText(
+            placeHolder = { stringResource(R.string.email_address) },
+            data = { email },
+            onValueChange = { email = it }
+        )
         Spacer(Modifier.height(16.dp))
         // Password field
         Box (modifier = Modifier.fillMaxWidth()) {
-            Text("Password", style = LocalMyTypography.current.bodyMedium)
+            Text(stringResource(R.string.pass), style = LocalMyTypography.current.bodyMedium)
         }
         Spacer(Modifier.height(12.dp))
-        BuildUiInputText()
+        BuildUiInputText(
+            placeHolder = {stringResource(R.string.pass)},
+            data = {pass},
+            onValueChange = {pass = it}
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            Text("Forgot password", style = LocalMyTypography.current.bodyMedium)
+            Text(stringResource(R.string.forgot_pass), style = LocalMyTypography.current.bodyMedium)
         }
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { onContinue(email) },
+            onClick = { onContinue(email, pass) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.primary))
         ) {
-            Text("Sign In", color = Color.White, style = LocalMyTypography.current.bodyBold)
+            Text(stringResource(R.string.sign_in), color = Color.White, style = LocalMyTypography.current.bodyBold)
         }
         Spacer(modifier = Modifier.height(32.dp))
         Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-            Text("Don't have an account?")
+            Text(stringResource(R.string.not_account), style = LocalMyTypography.current.bodyRegular,)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "Create Account",
+                stringResource(R.string.create_account),
                 color = Color.Black,
-                fontWeight = FontWeight.Bold,
+                style = LocalMyTypography.current.bodyBold,
                 modifier = Modifier.clickable { onCreateAccount() }
             )
         }
@@ -93,7 +106,7 @@ fun SignInEmailScreen(
 @Composable
 fun BuildUiInputText(
     data: () -> String = { "" },
-    placeHolder : () -> String = {"Enter email address"},
+    placeHolder : @Composable () -> String = {"Enter email address"},
     isPassword : () -> Boolean = {false},
     onValueChange: (String) -> Unit = {},
     modifier: Modifier = Modifier
@@ -150,6 +163,6 @@ fun BuildUiInputText(
 
 fun PreviewSignInEmailScreen() {
     FitnessAppTheme {
-        SignInEmailScreen(onContinue = {}, onCreateAccount = {}, onBack = {})
+//        SignInEmailScreen(onContinue = {}, onCreateAccount = {}, onBack = {})
     }
 }
