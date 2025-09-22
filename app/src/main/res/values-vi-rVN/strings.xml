@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ứng Dụng Tập Luyện</string>
+    <string name="start_ex">Bắt đầu tập luyện</string>
+    <string name="progress">Tiến độ</string>
+    <string name="see_all">Xem tất cả</string>
+    <string name="category">Danh mục</string>
+    <string name="home">Trang chủ</string>
+    <string name="activity">Hoạt động</string>
+    <string name="my_profile">Hồ sơ của tôi</string>
+    <string name="edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="change_password">Đổi mật khẩu</string>
+    <string name="help">Trợ giúp</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="save">Cập nhật</string>
+    <string name="sign_in">Đăng nhập</string>
+    <string name="sign_up">Đăng ký</string>
+    <string name="email_address">Địa chỉ email</string>
+    <string name="full_name"> Họ và tên</string>
+    <string name="confirm_pass">Xác nhận mật khẩu</string>
+    <string name="pass">Mật khẩu</string>
+    <string name="forgot_pass">Quên mật khẩu</string>
+    <string name="not_account">Chưa có tài khoản?</string>
+    <string name="create_account">Tạo tài khoản</string>
+    <string name="content_banner">Bắt đầu mạnh mẽ và đặt mục tiêu tập luyện của bạn</string>
+</resources>

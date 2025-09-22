@@ -7,18 +7,21 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -38,9 +41,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -104,7 +109,7 @@ fun FitnessBanner(
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
                 Text(
-                    text = "Start Exercise",
+                    text = stringResource(R.string.start_ex),
                     color = colorResource(R.color.primary),
                     style = LocalMyTypography.current.body2Bold
                 )
@@ -126,14 +131,19 @@ fun FitnessBanner(
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, paddingValues: PaddingValues) {
     val TAG = "HomeScreen"
-    LazyColumn (modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues)
+            .background(colorResource(R.color.white))
+            .padding(horizontal = 16.dp)
+
+        ,
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
-        ){
+    ) {
         item {
             Spacer(Modifier.height(9.dp))
             Row(
@@ -142,25 +152,33 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Flexio", style = LocalMyTypography.current.h3BoldStyle)
-                Image(imageVector = ImageVector.vectorResource(R.drawable.notification), "notificaiton")
+                Image(
+                    imageVector = ImageVector.vectorResource(R.drawable.notification),
+                    "notificaiton"
+                )
             }
             Spacer(modifier = Modifier.height(24.dp))
-            FitnessBanner("Start Strong and Set Your Fitness Goals", "") { }
+            FitnessBanner(title =  stringResource(R.string.content_banner), "") { }
             Spacer(modifier = Modifier.height(40.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Progress", style = LocalMyTypography.current.h3BoldStyle)
-                Text("See All", style = LocalMyTypography.current.body2Semi, color = colorResource(R.color.primary))
+                Text(text = stringResource(R.string.progress), style = LocalMyTypography.current.h3BoldStyle)
+                Text(
+                    stringResource(R.string.see_all),
+                    style = LocalMyTypography.current.body2Semi,
+                    color = colorResource(R.color.primary)
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            LazyRow(modifier = Modifier.fillMaxWidth(),
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                items(10){
+                items(10) {
                     WorkoutItem(
                         title = "Jumping Jacks",
                         remainingTime = "2:30",
@@ -175,23 +193,17 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Categories",style = LocalMyTypography.current.h3BoldStyle)
-                Text("See All", style = LocalMyTypography.current.body2Semi, color = colorResource(R.color.primary))
+                Text(stringResource(R.string.category), style = LocalMyTypography.current.h3BoldStyle)
+                Text(
+                    stringResource(R.string.see_all),
+                    style = LocalMyTypography.current.body2Semi,
+                    color = colorResource(R.color.primary)
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
-
-//            LazyRow(modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                items(10){
-//                    ItemCategoryExercise( it == 1)
-//                }
-//            }
-//            Spacer(modifier = Modifier.height(24.dp))
         }
-        items(typeExerciseList.size){
-            ItemCategory(data = typeExerciseList[it]){}
+        items(typeExerciseList.size) {
+            ItemCategory(data = typeExerciseList[it]) {}
         }
         item { Spacer(modifier = Modifier.height(48.dp)) }
     }
@@ -199,9 +211,72 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun ExerciseTotalView(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Spacer(Modifier.height(20.dp))
+        ItemCategory(modifier = Modifier, data = typeExerciseList[0], color = colorResource(R.color.white)) { }
+        Spacer(modifier = Modifier.height(24.dp))
+        Text("Exercises", style = LocalMyTypography.current.h3BoldStyle)
+        LazyColumn(
+            modifier = Modifier.height(126.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
+            items(10) {
+                BuildItemExercise()
+            }
+        }
+        Spacer(modifier = Modifier.height(35.dp))
+        Box(modifier = Modifier.fillMaxWidth().height(56.dp)
+            .background(color = colorResource(R.color.primary), shape = RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Start Exercise", style = LocalMyTypography.current.bodyBold, color = colorResource(R.color.white))
+        }
+    }
+}
+
+@Composable
+fun BuildItemExercise(modifier: Modifier = Modifier) {
+
+    Row(
+        modifier = Modifier.fillMaxWidth().height(20.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(5.dp)
+                .background(color = colorResource(R.color.gray_1), shape = CircleShape)
+        )
+        Spacer(modifier = Modifier.width(7.dp))
+        Text(
+            "Jumping Jacks",
+            style = LocalMyTypography.current.body2Regular,
+            color = colorResource(R.color.gray_1)
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun PreviewExerciseTotalView() {
+    FitnessAppTheme {
+        ExerciseTotalView()
+    }
+}
+
+@Composable
 fun ItemCategoryExercise(
-    isSelected : Boolean = false
-){
+    isSelected: Boolean = false
+) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
@@ -235,7 +310,7 @@ fun ItemCategoryExercise(
 fun FitnessBannerPreview() {
     FitnessAppTheme {
         CompositionLocalProvider(LocalMyTypography provides MyTypograph()) {
-            HomeScreen(modifier = Modifier.fillMaxSize())
+//            HomeScreen(modifier = Modifier.fillMaxSize())
         }
     }
 }

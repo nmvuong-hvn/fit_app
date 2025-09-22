@@ -38,7 +38,7 @@ import com.marusys.fitnessapp.model.Category
 import com.marusys.fitnessapp.ui.theme.LocalMyTypography
 
 @Composable
-fun ItemCategory(modifier: Modifier = Modifier, data : Category, onClick : (Category) -> Unit){
+fun ItemCategory(modifier: Modifier = Modifier, data : Category, color: Color = colorResource(R.color.bg_item_category), onClick : (Category) -> Unit){
     val onEventModifier = remember {
         modifier.clickable {
             onClick(data)
@@ -47,7 +47,7 @@ fun ItemCategory(modifier: Modifier = Modifier, data : Category, onClick : (Cate
     Box(modifier = onEventModifier
         .height(81.dp)
         .fillMaxWidth()
-        .background(colorResource(R.color.bg_item_category), RoundedCornerShape(12.dp)),
+        .background(color, RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.CenterStart
     ){
         Row (modifier = Modifier
