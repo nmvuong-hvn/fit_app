@@ -134,7 +134,9 @@ fun BuildUiInputText(
         shape = RoundedCornerShape(16.dp),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedContainerColor = colorResource(R.color.bg_item_category),
+            unfocusedContainerColor = colorResource(R.color.bg_item_category)
         ),
         trailingIcon = {
             if (isPassword()) {

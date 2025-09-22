@@ -13,4 +13,5 @@
     <color name="gray_3">#CFCFE2</color>
     <color name="gray_2">#9C9BC2</color>
     <color name="gray_1">#81809E</color>
+    <color name="btn_reset">#648DDB</color>
 </resources>
