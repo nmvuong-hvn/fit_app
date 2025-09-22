@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.marusys.fitnessapp.R
 import com.marusys.fitnessapp.feature.account.AccountEvent
 import com.marusys.fitnessapp.feature.account.AccountIntent
+import com.marusys.fitnessapp.feature.account.AccountRepoState
 import com.marusys.fitnessapp.feature.account.AccountViewModel
 import com.marusys.fitnessapp.feature.account.BuildUiInputText
 import com.marusys.fitnessapp.model.User
@@ -62,9 +63,11 @@ fun EditProfileScreen(modifier: Modifier = Modifier, viewModel : AccountViewMode
                 }
 
                 AccountEvent.None -> {}
-                is AccountEvent.Toast -> {
+                is AccountEvent.ToastMessage<*> -> {
                     Log.d(TAG, "SignUpAccountScreen: ====> VAO")
-                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    if (it is AccountRepoState<*>) {
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

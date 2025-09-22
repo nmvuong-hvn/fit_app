@@ -1,9 +1,11 @@
 package com.marusys.fitnessapp.repository
 
 import android.util.Log
+import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.marusys.fitnessapp.feature.account.AccountRepoState
 import com.marusys.fitnessapp.model.User
 import com.marusys.fitnessapp.model.ValidAccount
 import kotlinx.coroutines.Dispatchers
@@ -21,13 +23,13 @@ class AccountRepositoryImpl : AccountRepository {
            if (taskResult != null && taskResult.user != null){
                val dataRes = database.child("User").child(taskResult.user!!.uid).get().await()
                val user = dataRes.getValue(User::class.java)
-               user
+               AccountRepoState(user, "")
            }else {
-               null
+               AccountRepoState(null, "")
            }
         }.onFailure {
             Log.d(TAG, "signInAccount: ====> ${it.message}")
-            null
+            AccountRepoState(null, it.message ?: "")
         }
         return@withContext data.getOrNull()
     }
@@ -52,6 +54,16 @@ class AccountRepositoryImpl : AccountRepository {
             null
         }
         return@withContext data.getOrNull()?.user
+    }
+
+    override suspend fun sendMail(email: String) = withContext(Dispatchers.IO){
+        try {
+          firebaseAuth.sendPasswordResetEmail(email).await()
+          return@withContext AccountRepoState<Boolean>(true, "")
+        }catch (e : Exception){
+            Log.d(TAG, "sendMail: ===> error = ${e.message}")
+            return@withContext  AccountRepoState<Boolean>(false, e.message ?:"")
+        }
     }
 
 }

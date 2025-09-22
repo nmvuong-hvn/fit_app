@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -59,6 +61,7 @@ import org.koin.androidx.compose.koinViewModel
 import com.marusys.fitnessapp.feature.account.AccountIntent
 import com.marusys.fitnessapp.feature.account.SignInEmailScreen
 import com.marusys.fitnessapp.feature.account.SignUpAccountScreen
+import com.marusys.fitnessapp.feature.forgot_password.ForgotPasswordScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,9 +110,9 @@ fun HostRoute(modifier: Modifier = Modifier){
         topBar = {
             if (isShownTopBar) {
                 TopAppBar(
-
+                    modifier = Modifier.height(70.dp).fillMaxWidth(),
                     title = {
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.fillMaxWidth().padding(top = 40.dp), contentAlignment = Alignment.Center) {
                             mainRouteList[selectedIndex].content()
                         }
                     },
@@ -119,7 +122,7 @@ fun HostRoute(modifier: Modifier = Modifier){
                     navigationIcon = {
                         Log.d(TAG, "HostRoute: ===> isShownBackTopBar = $isShownBottomNavigation ")
                         if (isShownBackTopBar){
-                            Row (modifier = Modifier.wrapContentWidth()){
+                            Row (modifier = Modifier.wrapContentWidth().padding(top = 40.dp)){
                                 Icon(
                                     imageVector = Icons.Default.ArrowBack,
                                     contentDescription = "back",
@@ -199,27 +202,35 @@ fun NavGraphBuilder.onBoarding(navController: NavController){
 }
 
 fun NavGraphBuilder.auth(navController: NavController, onNavigate: (String) -> Unit){
+    val TAG = "auth"
     navigation(LoginRoute, route = "auth_graph"){
         composable(LoginRoute){
             val viewModel = koinViewModel<AccountViewModel>()
-            val onIntent : (AccountIntent) -> Unit = remember {
-                viewModel::processIntent
-            }
-            SignInEmailScreen(onContinue = { email, pass ->
-                onIntent(AccountIntent.SignIn(email, pass))
-            }, onCreateAccount = {
+            SignInEmailScreen(viewModel, onCreateAccount = {
                 onNavigate(RegisterRoute)
                 navController.navigate(RegisterRoute)
+            }, onCreateForgot = {
+                onNavigate(ForgotPassRoute)
+                navController.navigate(ForgotPassRoute)
+            }, onHomeScreen = {
+                onNavigate(HomeRoute)
+                navController.navigate("home_graph")
             })
         }
         composable(RegisterRoute){
             val viewModel = koinViewModel<AccountViewModel>()
             SignUpAccountScreen(viewModel = viewModel) {
+                val route = navController.previousBackStackEntry?.destination?.route ?: ""
+                Log.d(TAG, "auth: ====> route = $route")
+                onNavigate(route)
                 navController.popBackStack()
             }
         }
         composable(ForgotPassRoute){
-
+            val viewModel = koinViewModel<AccountViewModel>()
+            ForgotPasswordScreen(viewModel) {
+                navController.popBackStack()
+            }
         }
     }
 }
@@ -230,7 +241,7 @@ fun NavGraphBuilder.mainUi(
     onNavigate: (String) -> Unit,
 ) {
     val TAG = "mainUi"
-    navigation(startDestination = "Home", route = "home_graph"){
+    navigation(startDestination = HomeRoute, route = "home_graph"){
         composable(HomeRoute){
             HomeScreen(paddingValues = paddingValues)
         }
@@ -301,7 +312,7 @@ val mainRouteList = listOf(
     }, R.drawable.home_no_select, R.drawable.home_select),
 
     Route(ForgotPassRoute, content = {
-        Text(text = stringResource(R.string.sign_up),
+        Text(text = stringResource(R.string.forgot_pass),
             color = Color.Black,
             style = LocalMyTypography.current.h2BoldStyle)
     }, R.drawable.home_no_select, R.drawable.home_select),

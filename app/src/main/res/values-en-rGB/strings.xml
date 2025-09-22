@@ -23,4 +23,12 @@
     <string name="not_account">Do not have an account?</string>
     <string name="create_account">Create Account</string>
     <string name="content_banner">Start Strong and Set Your Fitness Goals</string>
+    <string name="content_forgot_pass">Please enter your email to reset the password</string>
+    <string name="send_mail_success">Send to %s successfully. Please check with this email!</string>
+    <string name="send_mail_failure">Send to %s failure. Please try again!</string>
+    <string name="create_account_success">Create account successfully</string>
+    <string name="create_account_failure">Create account failure</string>
+    <string name="login_success">Login successfully</string>
+    <string name="login_failure">Login failure</string>
+
 </resources>

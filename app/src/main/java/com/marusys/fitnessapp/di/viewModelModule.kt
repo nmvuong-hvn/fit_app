@@ -8,6 +8,6 @@ import com.marusys.fitnessapp.repository.AccountRepositoryImpl
 import org.koin.dsl.module
 
 val viewModelModule = module {
-    single <AccountViewModel>{ AccountViewModel(get()) }
+    single <AccountViewModel>{ AccountViewModel(get(),get()) }
     single <ProfileViewModel>{ ProfileViewModel() }
 }

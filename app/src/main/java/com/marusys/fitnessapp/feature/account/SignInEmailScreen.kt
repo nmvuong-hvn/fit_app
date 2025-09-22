@@ -1,11 +1,10 @@
 package com.marusys.fitnessapp.feature.account
 
-import androidx.compose.foundation.Image
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -13,37 +12,76 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.marusys.fitnessapp.R
+import com.marusys.fitnessapp.model.User
 import com.marusys.fitnessapp.ui.theme.FitnessAppTheme
 import com.marusys.fitnessapp.ui.theme.LocalMyTypography
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignInEmailScreen(
-    onContinue: (String , String) -> Unit,
+    viewModel: AccountViewModel,
     onCreateAccount: () -> Unit,
+    onCreateForgot :() -> Unit,
+    onHomeScreen : () -> Unit,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     val scrollState = rememberScrollState()
+    val onModifierForgot = remember {
+        Modifier.clickable {
+            onCreateForgot()
+        }
+    }
+
+    val onModifierCreateAccount = remember {
+        Modifier.clickable {
+            onCreateAccount()
+        }
+    }
+
+    val onIntent : (AccountIntent) -> Unit = remember {
+        viewModel::processIntent
+    }
+
+    val context = LocalContext.current
+    
+    LaunchedEffect(viewModel.accountEvent) {
+        viewModel.accountEvent.collectLatest {
+            when(it){
+                AccountEvent.Navigate -> {
+
+                }
+                AccountEvent.None -> {
+
+                }
+                is AccountEvent.ToastMessage<*> -> {
+                    if (it.message is AccountRepoState<*>) {
+                        if (it.message.isSuccess != null) {
+                            Toast.makeText(context, it.message.message, Toast.LENGTH_SHORT).show()
+                            onHomeScreen()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
-            .padding(24.dp).verticalScroll(scrollState),
+            .padding(24.dp)
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -67,19 +105,23 @@ fun SignInEmailScreen(
         }
         Spacer(Modifier.height(12.dp))
         BuildUiInputText(
-            placeHolder = {stringResource(R.string.pass)},
-            data = {pass},
-            onValueChange = {pass = it}
+            placeHolder = { stringResource(R.string.pass) },
+            data = { pass },
+            onValueChange = { pass = it },
+            isPassword = { true }
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+        Box(modifier = onModifierForgot.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd) {
             Text(stringResource(R.string.forgot_pass), style = LocalMyTypography.current.bodyMedium)
         }
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { onContinue(email, pass) },
+            onClick = {
+                onIntent(AccountIntent.SignIn(email, pass))
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -96,7 +138,7 @@ fun SignInEmailScreen(
                 stringResource(R.string.create_account),
                 color = Color.Black,
                 style = LocalMyTypography.current.bodyBold,
-                modifier = Modifier.clickable { onCreateAccount() }
+                modifier = onModifierCreateAccount
             )
         }
         Spacer(modifier = Modifier.height(32.dp))

@@ -1,9 +1,10 @@
 package com.marusys.fitnessapp.feature.account
 
-import android.accounts.Account
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.marusys.fitnessapp.R
 import com.marusys.fitnessapp.model.User
 import com.marusys.fitnessapp.repository.AccountRepository
 import kotlinx.coroutines.delay
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AccountViewModel(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val applicationContext: Context
 ) : ViewModel() {
     private val TAG = "AccountViewModel"
     private val _accountState = MutableStateFlow(AccountState())
@@ -28,7 +30,7 @@ class AccountViewModel(
             AccountIntent.CreateAccount -> {
                 _accountEvent.tryEmit(AccountEvent.Navigate)
             }
-            AccountIntent.ForgotPassword -> {
+            AccountIntent.NavigateForgotPassword -> {
                 _accountEvent.tryEmit(AccountEvent.Navigate)
             }
             is AccountIntent.SignIn -> {
@@ -42,6 +44,25 @@ class AccountViewModel(
             is AccountIntent.SignUp -> {
                 handleSignUpAccount(accountIntent.user)
             }
+
+            is AccountIntent.ForgotPassword -> {
+                handleSendMailForgotPassword(accountIntent.email)
+            }
+
+            AccountIntent.ClearData -> {
+                clearCache()
+            }
+        }
+    }
+
+    private fun handleSendMailForgotPassword(email: String) {
+        viewModelScope.launch {
+            val dataRes = accountRepository.sendMail(email)
+            if (dataRes.isSuccess == true ){
+                _accountEvent.tryEmit(AccountEvent.ToastMessage( applicationContext.getString(R.string.send_mail_success, email)))
+            }else {
+                _accountEvent.tryEmit(AccountEvent.ToastMessage(applicationContext.getString(R.string.send_mail_failure, email)))
+            }
         }
     }
 
@@ -50,23 +71,38 @@ class AccountViewModel(
             val data =  accountRepository.signUpAccount(user)
             if (data != null) {
                 Log.d(TAG, "handleSignUpAccount: =====> VAO 1")
-                _accountEvent.tryEmit(AccountEvent.Toast("Create account successfully"))
-                delay(300L)
-                _accountEvent.tryEmit(AccountEvent.Navigate)
-
+                _accountEvent.tryEmit(AccountEvent.ToastMessage(AccountRepoState(true,applicationContext.getString(R.string.create_account_success))))
             }else {
-                _accountEvent.tryEmit(AccountEvent.Toast("Create account failure"))
+                _accountEvent.tryEmit(AccountEvent.ToastMessage(AccountRepoState(false,applicationContext.getString(R.string.create_account_failure))))
             }
 
         }
     }
 
-    private fun handleSignInAccount(email: String, pass: String): Boolean {
-
-        return false
+    private fun handleSignInAccount(email: String, pass: String) {
+        viewModelScope.launch {
+           val user =  accountRepository.signInAccount(email, pass)
+            Log.d(TAG, "handleSignInAccount: ====> user = $user")
+            if (user == null) return@launch
+            if (user.isSuccess != null){
+                _accountEvent.tryEmit(AccountEvent.ToastMessage(user.copy(message = applicationContext.getString(R.string.login_success))))
+            }else {
+                _accountEvent.tryEmit(AccountEvent.ToastMessage(user.copy(message = applicationContext.getString(R.string.login_failure))))
+            }
+        }
     }
 
     fun clearCache(){
         _accountEvent.tryEmit(AccountEvent.None)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(TAG, "onCleared: ======> ")
+    }
 }
+
+data class AccountRepoState<out T>(
+    val isSuccess : T ?= null ,
+    val message : String = ""
+)

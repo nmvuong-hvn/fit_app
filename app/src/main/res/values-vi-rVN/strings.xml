@@ -24,4 +24,12 @@
     <string name="not_account">Chưa có tài khoản?</string>
     <string name="create_account">Tạo tài khoản</string>
     <string name="content_banner">Bắt đầu mạnh mẽ và đặt mục tiêu tập luyện của bạn</string>
+    <string name="content_forgot_pass">Vui lòng nhập email của bạn để đặt lại mật khẩu</string>
+    <string name="send_mail_success">Đã gửi đến %s thành công. Vui lòng kiểm tra email này!</string>
+    <string name="send_mail_failure">Đã gửi đến %s thất bại. Vui lòng kiểm tra lại!</string>
+    <string name="create_account_success">Tạo tài khoản thành công</string>
+    <string name="create_account_failure">Tạo tài khoản thất bại</string>
+    <string name="login_success">Đăng nhập thành công</string>
+    <string name="login_failure">Đăng nhập thất bại</string>
+
 </resources>
