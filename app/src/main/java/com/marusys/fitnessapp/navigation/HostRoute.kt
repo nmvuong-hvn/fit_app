@@ -66,7 +66,7 @@ import com.marusys.fitnessapp.feature.forgot_password.ForgotPasswordScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HostRoute(modifier: Modifier = Modifier){
+fun HostRoute(modifier: Modifier = Modifier,  viewModel: AccountViewModel = koinViewModel<AccountViewModel>()){
     val TAG = "HostRoute"
     val hostController = rememberNavController()
     var routePath by remember { mutableStateOf(LoginRoute) }
@@ -179,7 +179,7 @@ fun HostRoute(modifier: Modifier = Modifier){
         }
     ) { padding ->
         NavHost(navController = hostController, startDestination = "auth_graph") {
-            auth(hostController){
+            auth(hostController, viewModel){
                 routePath = it
             }
             mainUi(padding, navController = hostController){
@@ -201,11 +201,11 @@ fun NavGraphBuilder.onBoarding(navController: NavController){
     }
 }
 
-fun NavGraphBuilder.auth(navController: NavController, onNavigate: (String) -> Unit){
+fun NavGraphBuilder.auth(navController: NavController,viewModel: AccountViewModel, onNavigate: (String) -> Unit){
     val TAG = "auth"
     navigation(LoginRoute, route = "auth_graph"){
         composable(LoginRoute){
-            val viewModel = koinViewModel<AccountViewModel>()
+
             SignInEmailScreen(viewModel, onCreateAccount = {
                 onNavigate(RegisterRoute)
                 navController.navigate(RegisterRoute)
@@ -218,7 +218,6 @@ fun NavGraphBuilder.auth(navController: NavController, onNavigate: (String) -> U
             })
         }
         composable(RegisterRoute){
-            val viewModel = koinViewModel<AccountViewModel>()
             SignUpAccountScreen(viewModel = viewModel) {
                 val route = navController.previousBackStackEntry?.destination?.route ?: ""
                 Log.d(TAG, "auth: ====> route = $route")
@@ -227,7 +226,6 @@ fun NavGraphBuilder.auth(navController: NavController, onNavigate: (String) -> U
             }
         }
         composable(ForgotPassRoute){
-            val viewModel = koinViewModel<AccountViewModel>()
             ForgotPasswordScreen(viewModel) {
                 navController.popBackStack()
             }

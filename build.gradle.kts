@@ -5,4 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.google.gms.google.services) apply false
     alias(libs.plugins.google.firebase.crashlytics) apply false
+    id("de.undercouch.download") version( "4.1.2") apply false
+
 }

@@ -71,6 +71,9 @@ fun SignInEmailScreen(
                             onHomeScreen()
                         }
                     }
+                    if (it.message is String){
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

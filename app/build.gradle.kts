@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    id("de.undercouch.download")
 }
 
 android {
@@ -12,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.marusys.fitnessapp"
-        minSdk = 24
+        minSdk = 31
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -40,6 +41,9 @@ android {
         compose = true
     }
 }
+// import DownloadMPTasks task
+extra["ASSET_DIR"] = "$projectDir/src/main/assets"
+apply(from = "download_tasks.gradle")
 
 dependencies {
 
@@ -78,4 +82,18 @@ dependencies {
     implementation (libs.androidx.navigation.compose)
 
     implementation(libs.accompanist.systemuicontroller)
+
+    // CameraX core library
+    implementation (libs.androidx.camera.core)
+
+    // CameraX Camera2 extensions
+    implementation (libs.androidx.camera.camera2)
+
+    // CameraX Lifecycle library
+    implementation (libs.androidx.camera.lifecycle)
+
+    // CameraX View class
+    implementation (libs.androidx.camera.view)
+    // MediaPipe Library
+    implementation (libs.tasks.vision)
 }

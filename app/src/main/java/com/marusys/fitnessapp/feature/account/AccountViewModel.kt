@@ -83,7 +83,10 @@ class AccountViewModel(
         viewModelScope.launch {
            val user =  accountRepository.signInAccount(email, pass)
             Log.d(TAG, "handleSignInAccount: ====> user = $user")
-            if (user == null) return@launch
+            if (user == null) {
+                _accountEvent.tryEmit(AccountEvent.ToastMessage( applicationContext.getString(R.string.login_failure)))
+                return@launch
+            }
             if (user.isSuccess != null){
                 _accountEvent.tryEmit(AccountEvent.ToastMessage(user.copy(message = applicationContext.getString(R.string.login_success))))
             }else {
